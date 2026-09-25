@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Radar Cauda Longa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F3F3F5; --surface:#FFFFFF; --ink:#141B24; --ink2:#434B56; --muted:#6F7782; --line:#DEDFE3;
+  --accent:#DD303E; --accent-soft:#FBE3E5; --scope:#121821; --scope-line:rgba(255,255,255,.14); --scope-ink:#F2B6BB;
+  --p1:#F7C9CD; --p2:#EE8A93; --p3:#DD303E; --p4:#A61F2B; --p5:#6B1119;
+  --warn:#B97714; --bad:#7C3A8C; --good:#1E7F52;
+  --display:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans","Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0D1117; --surface:#161C25; --ink:#ECEEF1; --ink2:#BAC0C8; --muted:#8B929C;
+  --line:#2A313B; --accent:#F0505D; --accent-soft:#3A171C; --scope:#080B10; --scope-line:rgba(255,255,255,.12); --scope-ink:#F2B6BB;
+  --p1:#5A1F25; --p2:#93303A; --p3:#DD303E; --p4:#F0808A; --p5:#FAD3D6;
+  --warn:#E0A04F; --bad:#C58AD6; --good:#5CC592;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0D1117; --surface:#161C25; --ink:#ECEEF1; --ink2:#BAC0C8; --muted:#8B929C;
+  --line:#2A313B; --accent:#F0505D; --accent-soft:#3A171C; --scope:#080B10; --scope-line:rgba(255,255,255,.12); --scope-ink:#F2B6BB;
+  --p1:#5A1F25; --p2:#93303A; --p3:#DD303E; --p4:#F0808A; --p5:#FAD3D6;
+  --warn:#E0A04F; --bad:#C58AD6; --good:#5CC592;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:20px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h2{font-size:30px;font-weight:800;line-height:1.1}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.lede{color:var(--ink2);max-width:62ch}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums;font-weight:800}
+.mono{font-family:var(--mono)}
+section{display:flex;flex-direction:column;gap:28px}
+.sec-head{display:flex;flex-direction:column;gap:10px}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding-top:40px}
+.hero h1{font-size:clamp(40px,6vw,68px);font-weight:800;line-height:.98}
+.hero h1 span{color:var(--accent)}
+.hero-text{display:flex;flex-direction:column;gap:22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.kpi{background:var(--surface);padding:16px 18px;display:flex;flex-direction:column;gap:2px}
+.kpi .num{font-size:38px;line-height:1.05}
+.kpi .lbl{font-size:13px;color:var(--ink2)}
+.kpi .sub{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+.scope-box{position:relative;background:var(--scope);border-radius:50%;aspect-ratio:1;width:100%;max-width:500px;justify-self:center;overflow:hidden;box-shadow:0 0 0 1px var(--line),0 20px 50px -20px rgba(20,10,12,.45)}
+.scope-box svg{position:absolute;inset:0;width:100%;height:100%}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(221,48,62,0) 0deg,rgba(221,48,62,0) 300deg,rgba(221,48,62,.28) 358deg,rgba(221,48,62,.55) 360deg);animation:spin 7s linear infinite;pointer-events:none;mix-blend-mode:screen}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.sweep{animation:none;opacity:.5}}
+.scope-cap{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:center;max-width:500px;justify-self:center}
+.scope-col{display:flex;flex-direction:column;gap:12px}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 9px;border-radius:4px;max-width:280px;line-height:1.35;z-index:10}
+.tip[hidden]{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--ink2)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* FUNNEL */
+.funnel{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.stage-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.stage .who{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.row{display:flex;flex-direction:column;gap:5px}
+.row .lab{display:flex;justify-content:space-between;gap:10px;font-size:13.5px}
+.row .lab b{font-family:var(--display);font-variant-numeric:tabular-nums;font-size:15px}
+.track{height:8px;background:var(--accent-soft);border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:4px}
+.fill.warn{background:var(--p2)} .fill.bad{background:var(--p4)} .fill.soft{background:var(--p2)}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+/* grids */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:130px 1fr 58px;align-items:center;gap:12px;font-size:13.5px}
+.bar .v{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.bar .t{height:14px;border-radius:0 4px 4px 0;background:transparent}
+.bar .t div{height:100%;border-radius:0 4px 4px 0}
+.porte-pill{font-family:var(--mono);font-size:11px;padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--ink2);margin-left:6px}
+
+.pieces{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.piece{background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:4px}
+.piece .num{font-size:30px;line-height:1.05}
+.piece .lbl{font-size:13px;color:var(--ink2)}
+.piece .sub{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.piece.hl{background:var(--accent-soft)}
+
+/* weekly */
+.weeks{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;align-items:end;height:220px;padding-top:20px}
+.wk{display:flex;flex-direction:column;align-items:stretch;gap:6px;height:100%;justify-content:flex-end}
+.wk .col{background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;position:relative}
+.wk.part .col{background:repeating-linear-gradient(135deg,var(--accent) 0 4px,transparent 4px 7px);border:1.5px solid var(--accent);border-bottom:0}
+.wk .val{font-family:var(--display);font-weight:700;font-size:14px;text-align:center;font-variant-numeric:tabular-nums}
+.wk .dt{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:6px}
+
+/* map */
+.map{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:420px}
+.uf{aspect-ratio:1;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;line-height:1.1;border:1px solid var(--line)}
+.uf b{font-family:var(--display);font-size:13px}
+.uf.empty{background:transparent;border-style:dashed;color:var(--muted)}
+.scale{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.scale span{width:22px;height:10px;border-radius:2px;display:inline-block}
+.esfera{display:flex;height:34px;border-radius:4px;overflow:hidden;gap:2px}
+.esfera div{display:flex;align-items:center;padding-inline:10px;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+
+/* time */
+.vs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.vs .panel .num{font-size:44px;line-height:1}
+.vs .panel .unit{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.vs .panel.machine{background:var(--scope);border-color:var(--scope);color:#ECEEF1}
+.vs .panel.machine .unit,.vs .panel.machine .note{color:var(--scope-ink)}
+.vs .panel.machine .eyebrow{color:#F58A93}
+.hours{display:grid;grid-template-columns:1fr 1.3fr;gap:18px;align-items:start}
+.bignum{white-space:nowrap;font-size:clamp(48px,8vw,88px);line-height:.95;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tfoot td{font-weight:700;border-bottom:0}
+.tablewrap{overflow-x:auto}
+
+/* quality */
+.q{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.gauge{display:flex;flex-direction:column;gap:8px}
+.ring{width:92px;height:92px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid currentColor;width:fit-content}
+.chip.good,.chip.warn,.chip.bad{color:var(--accent)}
+
+footer{border-top:1px solid var(--line);padding-top:22px;display:flex;flex-direction:column;gap:10px;font-size:12.5px;color:var(--muted)}
+footer ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;max-width:90ch}
+
+@media (max-width:860px){
+  .hero,.two,.hours{grid-template-columns:1fr}
+  .funnel,.vs{grid-template-columns:1fr}
+  .pieces,.q{grid-template-columns:repeat(2,1fr)}
+  .hero{padding-top:24px}
+}
+@media (max-width:460px){
+  .bar{grid-template-columns:96px 1fr 48px;font-size:12.5px}
+  .weeks{gap:5px}
+  .kpi .num{font-size:30px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-text">
+    <div class="eyebrow">Esteira Cauda Longa · Gran Cursos Online</div>
+    <h1>O que a automação <span>entregou</span> até aqui</h1>
+    <p class="lede">Desde 14 de agosto, a esteira detecta concursos recém-publicados, decide quais merecem campanha, escreve copy e blogpost, gera as artes e entrega tudo pronto para o time de Mídia, CRM e Blog. Estes são os números lidos direto dos boards do Monday.</p>
+    <div class="kpis">
+      <div class="kpi"><span class="num">330</span><span class="lbl">concursos com campanha pronta</span><span class="sub">de 914 detectados pelo Radar</span></div>
+      <div class="kpi"><span class="num">470</span><span class="lbl">campanhas distribuídas</span><span class="sub">Lançamento 259 · Conversão 208 · Antecipação 3</span></div>
+      <div class="kpi"><span class="num">4.081</span><span class="lbl">peças de copy escritas</span><span class="sub">≈ 1,2 milhão de palavras</span></div>
+      <div class="kpi"><span class="num">1.007</span><span class="lbl">artes geradas</span><span class="sub">470 thumbs · 537 peças Meta</span></div>
+    </div>
+    <div class="meta"><span>Extraído em 25/09/2026</span><span>Período 14/08 → 25/09 (6 semanas)</span></div>
+  </div>
+  <div class="scope-col">
+    <div class="scope-box" id="scope" role="img" aria-label="Radar com os 329 concursos que receberam campanha, posicionados por região e data de entrega">
+      <svg id="scopeSvg" viewBox="-260 -260 520 520"></svg>
+      <div class="sweep"></div>
+    </div>
+    <p class="scope-cap">Cada ponto é um concurso com campanha entregue. Ângulo = região do país. Distância do centro = data da entrega: centro em 14/08, borda em hoje. Tamanho e cor = porte.</p>
+    <div class="legend" id="legend"></div>
+  </div>
+</header>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Funil da esteira</div>
+    <h2>Do concurso publicado ao material na mão do time</h2>
+    <p class="lede">Três agentes decidem e produzem em sequência. Cada etapa filtra: nem todo concurso detectado vira campanha, e nem toda campanha vira peça publicada.</p>
+  </div>
+  <div class="funnel">
+    <div class="stage">
+      <div class="stage-top"><h3>1. Radar e triagem</h3><span class="who">concursos</span></div>
+      <div class="row"><div class="lab"><span>Detectados no Radar</span><b>914</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+      <div class="row"><div class="lab"><span>Viraram campanha</span><b>330</b></div><div class="track"><div class="fill" style="width:36.1%"></div></div></div>
+      <div class="row"><div class="lab"><span>Porte ainda indefinido</span><b>155</b></div><div class="track"><div class="fill soft" style="width:17%"></div></div></div>
+      <p class="note">Ficam de fora concursos com inscrições encerradas (144), sem dados mínimos ou fora dos critérios de porte e situação.</p>
+    </div>
+    <div class="stage">
+      <div class="stage-top"><h3>2. Produção</h3><span class="who">campanhas</span></div>
+      <div class="row"><div class="lab"><span>Campanhas criadas</span><b>565</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+      <div class="row"><div class="lab"><span>Distribuídas prontas</span><b>470</b></div><div class="track"><div class="fill" style="width:83.2%"></div></div></div>
+      <div class="row"><div class="lab"><span>Barradas pelo filtro</span><b>46</b></div><div class="track"><div class="fill warn" style="width:8.1%"></div></div></div>
+      <div class="row"><div class="lab"><span>Paradas em erro hoje</span><b>41</b></div><div class="track"><div class="fill bad" style="width:7.3%"></div></div></div>
+      <p class="note">8 seguem em andamento na fila. Filtro: rejeitadas (43) e vagas insuficientes (3).</p>
+    </div>
+    <div class="stage">
+      <div class="stage-top"><h3>3. Entrega ao time</h3><span class="who">itens por canal</span></div>
+      <div class="row"><div class="lab"><span>Itens entregues (Blog, CRM, Mídia)</span><b>1.116</b></div><div class="track"><div class="fill" style="width:100%"></div></div></div>
+      <div class="row"><div class="lab"><span>Aceitos pelo time</span><b>928</b></div><div class="track"><div class="fill" style="width:83.2%"></div></div></div>
+      <div class="row"><div class="lab"><span>Rejeitados / fora de critério</span><b>188</b></div><div class="track"><div class="fill warn" style="width:16.8%"></div></div></div>
+      <div class="row"><div class="lab"><span>Marcados como publicados</span><b>55</b></div><div class="track"><div class="fill soft" style="width:4.9%"></div></div></div>
+      <p class="note">388 réguas de CRM já entraram na planilha de disparo com D0 agendado. O status "Publicado" é marcado à mão e subestima o que foi ao ar.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">O que foi produzido</div>
+    <h2>4.081 textos e 1.007 artes, sem ninguém escrever ou diagramar</h2>
+    <p class="lede">Cada campanha sai com um pacote definido pelo tipo e pelo porte do concurso. Concursos com menos de 50 vagas recebem o pacote sem mídia paga.</p>
+  </div>
+  <div class="pieces">
+    <div class="piece hl"><span class="num">470</span><span class="lbl">Blogposts completos</span><span class="sub">mediana de 2.600 palavras por pacote</span></div>
+    <div class="piece"><span class="num">1.383</span><span class="lbl">E-mails de CRM</span><span class="sub">D0, D3 e D7 · 461 réguas</span></div>
+    <div class="piece"><span class="num">1.383</span><span class="lbl">Mensagens de WhatsApp</span><span class="sub">D0, D1 e D5 · 461 réguas</span></div>
+    <div class="piece"><span class="num">469</span><span class="lbl">Legendas WhatsApp/Telegram</span><span class="sub">uma por blogpost</span></div>
+    <div class="piece"><span class="num">182</span><span class="lbl">Copies de Google Search</span><span class="sub">anúncios 14 títulos × 4 descrições</span></div>
+    <div class="piece"><span class="num">182</span><span class="lbl">Copies de Meta</span><span class="sub">Facebook e Instagram</span></div>
+    <div class="piece hl"><span class="num">470</span><span class="lbl">Thumbs de blog</span><span class="sub">1200×630</span></div>
+    <div class="piece hl"><span class="num">537</span><span class="lbl">Artes de Meta</span><span class="sub">179 kits × 3 formatos (feed, quadrado, story)</span></div>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <div class="sec-head"><h3>Concursos atendidos por porte</h3><p class="note">Porte calculado pela calculadora Épsilon, sem IA. A cauda longa é P e M: exatamente o volume que o time não conseguia cobrir à mão.</p></div>
+      <div class="bars" id="porteBars"></div>
+    </div>
+    <div class="panel">
+      <div class="sec-head"><h3>Campanhas distribuídas por semana</h3><p class="note">A produção subiu de 15 para 195 por semana depois que a esteira passou a rodar 24 horas no Cloud Run (11/09).</p></div>
+      <div class="weeks" id="weeks"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Cobertura geográfica</div>
+    <h2>24 estados e 273 concursos municipais que o fluxo manual não alcançava</h2>
+    <p class="lede">83% dos concursos atendidos são municipais: prefeituras, câmaras e autarquias pequenas, com pouca concorrência de conteúdo e alta intenção de busca local.</p>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <h3>Concursos com campanha por UF</h3>
+      <div class="map" id="map"></div>
+      <div class="scale"><span style="background:var(--p1)"></span>1–4<span style="background:var(--p2)"></span>5–14<span style="background:var(--p3)"></span>15–29<span style="background:var(--p4)"></span>30–49<span style="background:var(--p5)"></span>50+ &nbsp;· tracejado = sem campanha ainda</div>
+      <p class="note">Mais 5 concursos de abrangência nacional. SP lidera com 86 concursos.</p>
+    </div>
+    <div class="panel">
+      <h3>Esfera dos concursos atendidos</h3>
+      <div class="esfera">
+        <div style="flex:273;background:var(--p4);color:var(--bg)">Municipal · 273</div>
+        <div style="flex:35;background:var(--p2);color:var(--ink)">35</div>
+        <div style="flex:11;background:var(--p1);color:var(--ink)">11</div>
+        <div style="flex:11;background:var(--line);color:var(--ink2)"></div>
+      </div>
+      <table>
+        <thead><tr><th>Esfera</th><th class="r">Concursos</th><th class="r">%</th></tr></thead>
+        <tbody>
+          <tr><td>Municipal</td><td class="r">273</td><td class="r">83%</td></tr>
+          <tr><td>Estadual</td><td class="r">35</td><td class="r">11%</td></tr>
+          <tr><td>Federal</td><td class="r">11</td><td class="r">3%</td></tr>
+          <tr><td>Não classificada</td><td class="r">11</td><td class="r">3%</td></tr>
+        </tbody>
+      </table>
+      <h3>Maiores estados</h3>
+      <div class="bars" id="ufBars"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Tempo e esforço</div>
+    <h2>Do edital ao pacote em horas, não em semanas</h2>
+    <p class="lede">Comparação com os boards do time humano: Copywriting (1.072 demandas entregues desde 2020) e Criação (9.438 tarefas finalizadas). O prazo humano é o tempo entre abrir a demanda e entregá-la.</p>
+  </div>
+  <div class="vs">
+    <div class="panel">
+      <div class="eyebrow">Copywriting humano</div>
+      <div><span class="num">7</span> <span class="unit">dias (mediana)</span></div>
+      <p class="note">Por demanda de copy. Em 2025 a mediana foi 8 dias; 1 em cada 4 demandas levou mais de 15. O time entregou 262 demandas no ano todo.</p>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">Criação humana</div>
+      <div><span class="num">3</span> <span class="unit">dias (mediana)</span></div>
+      <p class="note">Por tarefa de arte, com cerca de 8 peças cada. Tarefas ligadas a concurso: 4 dias.</p>
+    </div>
+    <div class="panel machine">
+      <div class="eyebrow">Esteira automática</div>
+      <div><span class="num">~14</span> <span class="unit">min de máquina por pacote</span></div>
+      <p class="note">Pior caso (p95) do redator de copy; artes e distribuição levam segundos. Com a espera na fila, a mediana do briefing à entrega foi de 32 h nas últimas duas semanas.</p>
+    </div>
+  </div>
+
+  <div class="panel hours">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="eyebrow">Horas de trabalho poupadas</div>
+      <div class="num bignum">≈ 1.910 h</div>
+      <p class="note" style="font-size:14px;color:var(--ink2)">Equivale a cerca de 11 meses de uma pessoa em tempo integral (8 h/dia, 21 dias úteis), em 6 semanas de operação. Conta só as peças aceitas pelo time; os 188 itens rejeitados ficam de fora.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Peça aceita</th><th class="r">Qtd.</th><th class="r">Tempo humano</th><th class="r">Horas</th></tr></thead>
+        <tbody>
+          <tr><td>Blogpost</td><td class="r">470</td><td class="r">2 h</td><td class="r">940</td></tr>
+          <tr><td>Régua de CRM (6 peças)</td><td class="r">401</td><td class="r">1 h 30</td><td class="r">602</td></tr>
+          <tr><td>Legenda WhatsApp/Telegram</td><td class="r">469</td><td class="r">20 min</td><td class="r">156</td></tr>
+          <tr><td>Copy Search + Meta</td><td class="r">54</td><td class="r">1 h</td><td class="r">54</td></tr>
+          <tr><td>Arte (por formato)</td><td class="r">632</td><td class="r">15 min</td><td class="r">158</td></tr>
+        </tbody>
+        <tfoot><tr><td>Total</td><td></td><td></td><td class="r">1.910</td></tr></tfoot>
+      </table>
+      <p class="note" style="margin-top:8px">Premissa conservadora por peça. Somando também o que foi rejeitado, a esteira produziu o equivalente a 2.220 h.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="eyebrow">Qualidade e confiabilidade</div>
+    <h2>Regras fixas checam cada fato antes de qualquer peça sair</h2>
+    <p class="lede">Nenhum número, data ou vaga é inventado: cada fato citado precisa estar no edital ou no briefing. Quando a checagem falha, o item volta, é corrigido ou para em erro. Ele não segue adiante com dado errado.</p>
+  </div>
+  <div class="q" id="quality"></div>
+</section>
+
+<footer>
+  <strong style="color:var(--ink2)">Como os números foram obtidos</strong>
+  <ul>
+    <li>Leitura completa, sem filtros, dos boards Radar de Concursos (914 itens), Campanhas (565), Automação Cauda Longa (1.116 itens, 4.914 subitens), Copywriting Externo (1.182) e Criação (9.989), em 25/09/2026.</li>
+    <li>Artes contadas pelos arquivos listados em cada "Pacote de artes"; palavras, pelo último "Pacote de copy" de cada campanha distribuída.</li>
+    <li>Prazo humano: da criação da demanda até a mudança do status para Entregue (Copywriting) ou até a data "Pronto em" (Criação). Não é tempo de trabalho efetivo.</li>
+    <li>O tempo de máquina vem da telemetria de produção do redator (p95 de 812 s por item em 18/09). O ponto do radar usa a data da primeira distribuição de cada concurso.</li>
+  </ul>
+</footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const BLIPS = [["PR", "M", 1, "Concurso Prefeitura de Curitiba · PR · 2026"], ["GO", "M", 3, "Concurso GCM Caldas Novas · GO · 2026"], ["RO", "P", 3, "Concurso IPAM de Porto Velho · RO · 2026"], ["MG", "M", 0, "Concurso HOB MG · MG · 2026"], ["GO", "M", 0, "Concurso SME de Cristalina · GO · 2026"], ["MG", "PP", 0, "Concurso Prefeitura de Ipaba · MG · 2026"], ["PB", "M", 1, "Concurso Prefeitura de Conceição · PB · 2026"], ["SP", "P", 1, "Concurso Prefeitura de Santos · SP · 2026"], ["GO", "M", 3, "Concurso Câmara de Rio Verde · GO · 2026"], ["MA", "M", 3, "Concurso Polícia Penal MA · MA · 2026"], ["MA", "M", 3, "Concurso SEAP MA · MA · 2026"], ["RS", "P", 10, "Concurso Prefeitura de Canudos do Vale · RS · 2026"], ["BA", "Indefinido", 11, "Concurso Prefeitura de Conceição do Almeida · BA · 2026"], ["PR", "P", 12, "Concurso Prefeitura de Nova Aurora · PR · 2026"], ["MG", "M", 17, "Concurso Prefeitura de Contagem · Contagem · MG · 2026"], ["AL", "M", 17, "Concurso Prefeitura de São Sebastião · AL · 2026"], ["RJ", "P", 12, "Concurso PGM de Casimiro de Abreu · RJ · 2026"], ["GO", "M", 17, "Concurso Prefeitura de Petrolina de Goiás · GO · 2026"], ["RJ", "M", 17, "Concurso Prefeitura de Engenheiro Paulo de Frontin · RJ · 2026"], ["RN", "M", 10, "Concurso Prefeitura de Lagoa de Pedras · RN · 2026"], ["PB", "M", 12, "Concurso Prefeitura de Guarabira · PB · 2026"], ["GO", "M", 25, "Concurso Prefeitura de Hidrolina · GO · 2026"], ["RN", "P", 13, "Concurso Prefeitura de Equador · RN · 2026"], ["SP", "M", 19, "Concurso Prefeitura de Serra Negra · SP · 2026"], ["GO", "M", 20, "Concurso Prefeitura de São Miguel do Araguaia · GO · 2026"], ["CE", "M", 9, "Concurso Seduc CE · CE · 2026"], ["GO", "P", 17, "Concurso SME de Piranhas · GO · 2026"], ["PE", "M", 24, "Concurso Prefeitura de Exu · PE · 2026"], ["GO", "M", 24, "Concurso Prefeitura de Trombas · GO · 2026"], ["CE", "P", 17, "Concurso SME de Aracati · CE · 2026"], ["SP", "M", 17, "Concurso SMS de Itanhaém · SP · 2026"], ["CE", "M", 17, "Concurso Prefeitura de Groaíras · CE · 2026"], ["MG", "M", 24, "Concurso Prefeitura de Piracema · MG · 2026"], ["GO", "P", 24, "Concurso SMS Trindade · GO · 2026"], ["GO", "M", 17, "Concurso Prefeitura de Heitoraí · GO · 2026"], ["SP", "M", 17, "Concurso Prefeitura de Mauá · SP · 2026"], ["PR", "P", 17, "Concurso Prefeitura de Quitandinha · PR · 2026"], ["SP", "M", 17, "Concurso SME de Santos · SP · 2026"], ["SP", "M", 17, "Concurso Prefeitura de Limeira · SP · 2026"], ["MG", "M", 32, "Concurso Prefeitura de Pedro Teixeira · MG · 2026"], ["SP", "M", 25, "Concurso Prefeitura de Ilhabela · SP · 2026"], ["RS", "P", 25, "Concurso Prefeitura de Estrela · RS · 2026"], ["MG", "M", 26, "Concurso Santana de Pirapama MG · MG · 2026"], ["AL", "M", 21, "Concurso Sefaz AL · AL · 2026"], ["RS", "P", 25, "Concurso Prefeitura de Tapera · RS · 2026"], ["PI", "P", 25, "Concurso SME União · PI · 2026"], ["SP", "M", 26, "Concurso Prefeitura de Bariri · SP · 2026"], ["PE", "M", 26, "Concurso Prefeitura de Floresta · PE · 2026"], ["SP", "M", 32, "Concurso Prefeitura de Buri · SP · 2026"], ["Nacional", "M", 34, "Residência HCPA · Nacional · 2027"], ["MG", "P", 26, "Concurso Prefeitura de São João Del-Rei · MG · 2026"], ["MG", "P", 26, "Concurso SME de São João Del-Rei · MG · 2026"], ["SP", "P", 18, "Concurso Prefeitura de Itapecerica da Serra · SP · 2026"], ["GO", "P", 18, "Concurso Câmara de Inaciolândia · GO · 2026"], ["RJ", "M", 26, "Concurso Seplag RJ · RJ · 2026"], ["AL", "P", 17, "Concurso Prefeitura de Santana do Mundaú · AL · 2026"], ["PE", "M", 17, "Concurso Prefeitura de Moreilândia · PE · 2026"], ["AL", "P", 18, "Concurso Prefeitura de Mundaú · AL · 2026"], ["RJ", "M", 18, "Concurso SME Valença · RJ · 2026"], ["SP", "P", 34, "Residência FAMERP · SP · 2027"], ["Nacional", "M", 41, "Residência Fiocruz Brasília · Nacional · 2027"], ["SP", "M", 20, "Concurso SME de Itanhaém · SP · 2026"], ["SP", "M", 26, "Concurso SME de Caçapava · SP · 2026"], ["PB", "P", 25, "Concurso Prefeitura de Areia · PB · 2026"], ["PB", "M", 25, "Concurso Prefeitura de Poço Dantas · PB · 2026"], ["RS", "M", 27, "Concurso Prefeitura de Canguçu · RS · 2026"], ["RN", "M", 25, "Concurso Prefeitura de Cruzeta · RN · 2026"], ["CE", "M", 25, "Concurso Prefeitura de Jaguaribe · CE · 2026"], ["CE", "P", 25, "Concurso Prefeitura de Acaraú · CE · 2026"], ["SC", "P", 27, "Concurso Sefaz SC · SC · 2026"], ["AL", "P", 25, "Concurso SME de Teotônio Vilela · AL · 2026"], ["PE", "M", 26, "Concurso Prefeitura de Trindade · PE · 2026"], ["ES", "P", 27, "Concurso GCM de Santa Maria de Jetibá · ES · 2026"], ["CE", "P", 27, "Concurso Prefeitura de Piquet Carneiro · CE · 2026"], ["RJ", "M", 27, "Concurso Prefeitura de Queimados · RJ · 2026"], ["GO", "P", 27, "Concurso Prefeitura de Cezarina · GO · 2026"], ["SP", "M", 29, "Concurso SETEC Campinas · SP · 2026"], ["MG", "P", 28, "Concurso DAMAE de São João Del-Rei · MG · 2026"], ["MG", "P", 29, "Concurso GCM de São João Del-Rei · MG · 2026"], ["GO", "P", 28, "Concurso Câmara de Pires do Rio · GO · 2026"], ["SC", "P", 29, "Concurso SME de Blumenau · SC · 2026"], ["GO", "Estratégico", 29, "Concurso TCE GO · GO · 2026"], ["SP", "M", 32, "Concurso Câmara de Colômbia · SP · 2026"], ["ES", "P", 29, "Concurso CRF ES · ES · 2026"], ["SC", "P", 29, "Concurso Prefeitura de Jaraguá do Sul · SC · 2026"], ["MG", "P", 29, "Concurso Câmara de Unaí · MG · 2026"], ["SC", "P", 29, "Concurso SAAE de Jaraguá do Sul · SC · 2026"], ["MG", "P", 29, "Concurso SAAE de Itambacuri · MG · 2026"], ["SP", "P", 29, "Concurso Câmara de Itaju · SP · 2026"], ["SP", "M", 29, "Residência FOA UNESP · SP · 2027"], ["SC", "P", 29, "Concurso FUJAMA Jaraguá do Sul · SC · 2026"], ["SC", "P", 29, "Concurso Câmara de São Joaquim · SC · 2026"], ["RS", "G", 29, "Concurso TJ RS Juiz · RS · 2026"], ["PR", "P", 29, "Concurso Prefeitura de Mirador · PR · 2026"], ["CE", "P", 29, "Concurso Câmara de Meruoca · CE · 2026"], ["CE", "P", 29, "Concurso Câmara de Pires Ferreira · CE · 2026"], ["SP", "P", 41, "Concurso Prefeitura de Vera Cruz · SP · 2026"], ["SP", "M", 29, "Concurso Prefeitura de Paulínia · SP · 2026"], ["SC", "P", 29, "Concurso Prefeitura de Calmon · SC · 2026"], ["SP", "P", 29, "Concurso Prefeitura de Riolândia · SP · 2026"], ["CE", "P", 29, "Concurso Prefeitura de Horizonte · CE · 2026"], ["SP", "M", 29, "Concurso GCM Paulínia · SP · 2026"], ["SC", "P", 29, "Concurso Câmara de Ponte Alta · SC · 2026"], ["MG", "P", 29, "Concurso Câmara de Capinópolis · MG · 2026"], ["RS", "P", 41, "Concurso Câmara de Piratini · RS · 2026"], ["RS", "P", 29, "Concurso EPTC Porto Alegre · RS · 2026"], ["Nacional", "M", 32, "Concurso IFMG · Nacional · 2026"], ["SC", "M", 29, "Concurso Prefeitura de Paraíso · SC · 2026"], ["RS", "P", 29, "Concurso Câmara de Santa Bárbara do Sul · RS · 2026"], ["PB", "P", 30, "Concurso Prefeitura de Coxixola · PB · 2026"], ["PR", "P", 30, "Concurso Prefeitura de Itaipulândia · PR · 2026"], ["SC", "P", 30, "Concurso Prefeitura de Massaranduba · SC · 2026"], ["MG", "P", 30, "Concurso Câmara de Natércia · MG · 2026"], ["PE", "P", 30, "Concurso Câmara de Mirandiba · PE · 2026"], ["SC", "P", 30, "Concurso Prefeitura de São Joaquim · SC · 2026"], ["SP", "P", 30, "Concurso Câmara de Rio das Pedras · SP · 2026"], ["SP", "M", 41, "Residência FCT · SP · 2027"], ["SP", "P", 30, "Concurso Câmara de Garça · SP · 2026"], ["CE", "P", 30, "Concurso Câmara de Paramoti · CE · 2026"], ["SP", "M", 30, "Concurso Câmara de Itanhaém · SP · 2026"], ["SP", "M", 32, "Concurso Prefeitura de Cabreúva · SP · 2026"], ["SP", "P", 30, "Concurso Prefeitura de Urânia · SP · 2026"], ["SP", "P", 30, "Concurso Prefeitura de Jarinu · SP · 2026"], ["SC", "P", 30, "Concurso Prefeitura de Barra Bonita · SC · 2026"], ["PB", "P", 41, "Concurso Câmara de São José do Sabugi · PB · 2026"], ["MG", "M", 30, "Concurso IFMG (Professor) · MG · 2026"], ["SP", "M", 30, "Concurso Câmara de Itanhaém · SP · 2026"], ["MG", "P", 32, "Concurso Câmara de Tupaciguara · MG · 2026"], ["SP", "P", 30, "Concurso SAAE de Brotas · SP · 2026"], ["RN", "P", 30, "Concurso Câmara de Pau dos Ferros · RN · 2026"], ["SC", "P", 27, "Concurso Mondaí · SC · 2026"], ["RS", "P", 28, "Concurso Prefeitura de Redentora · Redentora · RS · 2026"], ["SC", "P", 27, "Concurso Prefeitura de Nova Erechim · SC · 2026"], ["RN", "P", 28, "Residência ISD · RN · 2027"], ["MG", "M", 28, "Concurso SMS de Baldim · MG · 2026"], ["RS", "M", 28, "Concurso Cachoeira do Sul · RS · 2026"], ["RS", "P", 28, "Concurso Câmara de Redentora · Redentora · RS · 2026"], ["SP", "M", 32, "Residência UNESP · SP · 2027"], ["SP", "M", 29, "Concurso IPMS de Suzano · SP · 2026"], ["CE", "M", 30, "Concurso SME de Poranga · CE · 2026"], ["PR", "P", 28, "Concurso Prefeitura de Perobal · PR · 2026"], ["SP", "P", 28, "Concurso Prefeitura de São Pedro do Turvo · SP · 2026"], ["MS", "M", 28, "Concurso Câmara de Ponta Porã · MS · 2026"], ["RO", "P", 28, "Concurso Câmara de São Miguel do Guaporé · RO · 2026"], ["SP", "M", 30, "Concurso Prefeitura de Saltinho · SP · 2026"], ["PB", "P", 28, "Concurso Câmara de Riachão do Poço · PB · 2026"], ["SP", "M", 41, "Concurso EMDAEP de Dracena · SP · 2026"], ["SC", "P", 28, "Concurso Câmara de Concórdia · SC · 2026"], ["SP", "M", 28, "Concurso Prefeitura de Guarulhos · SP · 2026"], ["MG", "M", 28, "Concurso FUMEP de Sete Lagoas · MG · 2026"], ["CE", "P", 28, "Concurso Câmara de Massapê · CE · 2026"], ["GO", "P", 28, "Concurso Prefeitura de Rio Verde · GO · 2026"], ["AL", "M", 29, "Concurso ADE AL · AL · 2026"], ["MG", "P", 29, "Concurso Câmara de Rio Piracicaba · MG · 2026"], ["SC", "P", 29, "Concurso Câmara de Saltinho · SC · 2026"], ["MG", "P", 29, "Concurso SMS de Abre Campo · MG · 2026"], ["GO", "P", 29, "Concurso Câmara de Aragarças · GO · 2026"], ["SP", "M", 29, "Concurso SME de Andradina · SP · 2026"], ["SP", "P", 29, "Concurso FUNDACI Ilhabela · SP · 2026"], ["RS", "P", 29, "Concurso Prefeitura de Toropi · RS · 2026"], ["MG", "P", 29, "Concurso SAAE de Pirapora · MG · 2026"], ["GO", "P", 29, "Concurso Câmara de Mutunópolis · GO · 2026"], ["MG", "P", 29, "Concurso Câmara de Lambari · MG · 2026"], ["RS", "P", 35, "Concurso Câmara de Guaporé · RS · 2026"], ["SP", "M", 29, "Concurso Prefeitura de Ariranha · SP · 2026"], ["SP", "M", 29, "Concurso Câmara de José Bonifácio · SP · 2026"], ["MG", "M", 29, "Concurso Prefeitura de São Sebastião do Rio Verde · MG · 2026"], ["SP", "M", 29, "Concurso Prefeitura de Gavião Peixoto · SP · 2026"], ["SP", "M", 29, "Concurso São Sebastião PREV SP · 2026"], ["MG", "P", 29, "Concurso Prefeitura de São Vicente de Minas · MG · 2026"], ["PE", "P", 29, "Concurso ISS Caruaru · PE · 2026"], ["SP", "M", 29, "Concurso Câmara de Assis · SP · 2026"], ["SC", "P", 29, "Concurso Prefeitura de Vidal Ramos · SC · 2026"], ["SP", "M", 31, "Concurso CIMPS · SP · 2026"], ["SP", "M", 31, "Concurso SMS de Itapecerica da Serra · SP · 2026"], ["RN", "P", 31, "Concurso Câmara de Equador · RN · 2026"], ["MG", "P", 31, "Concurso Câmara de Cajuri · MG · 2026"], ["MG", "P", 31, "Concurso Câmara de Tiradentes · MG · 2026"], ["MG", "M", 31, "Concurso Prefeitura de Antônio Prado de Minas · MG · 2026"], ["GO", "P", 31, "Concurso Prefeitura de Carmo do Rio Verde · GO · 2026"], ["SP", "M", 31, "Concurso Prefeitura de Anhembi · SP · 2026"], ["SP", "P", 31, "Concurso Prefeitura de Itatinga · SP · 2026"], ["MG", "P", 31, "Concurso Câmara de Bocaina de Minas · MG · 2026"], ["GO", "P", 32, "Concurso Prefeitura de Uruana · GO · 2026"], ["MG", "PP", 0, "Concurso Prefeitura de Coromandel · MG · 2026"], ["MG", "M", 1, "Concurso Prefeitura de Pedra Dourada · MG · 2026"], ["MG", "P", 1, "Concurso Câmara de Dom Silvério · MG · 2026"], ["MG", "P", 11, "Concurso Câmara de Divisa Nova · MG · 2026"], ["MG", "P", 10, "Concurso Câmara de Dores do Indaiá · MG · 2026"], ["MG", "P", 11, "Concurso Prefeitura de Paiva · MG · 2026"], ["BA", "M", 11, "Concurso Bombeiros BA Saúde · BA · 2026"], ["BA", "M", 11, "Concurso PM BA Saúde · BA · 2026"], ["SP", "M", 9, "Concurso Prefeitura de Jahu · SP · 2026"], ["AM", "M", 10, "Concurso Manausprev · AM · 2026"], ["RS", "P", 14, "Concurso Prefeitura de Relvado · RS · 2026"], ["MG", "M", 41, "Concurso Prefeitura de Alvinópolis · MG · 2026"], ["ES", "P", 32, "Concurso SME de Anchieta · ES · 2026"], ["CE", "P", 32, "Concurso Câmara de Graça · CE · 2026"], ["SC", "P", 32, "Concurso ICSL de São Lourenço do Oeste · SC · 2026"], ["SP", "M", 32, "Concurso Prefeitura de Corumbataí · SP · 2026"], ["RS", "P", 39, "Concurso Prefeitura de Vale Real · RS · 2026"], ["SC", "P", 33, "Concurso Câmara de Ibirama · SC · 2026"], ["RN", "P", 33, "Concurso GCM Nísia Floresta · RN · 2026"], ["SP", "P", 33, "Concurso Prefeitura de São José do Rio Pardo · SP · 2026"], ["AP", "M", 33, "Concurso SESA AP · AP · 2026"], ["RN", "P", 33, "Concurso Câmara de Nísia Floresta · RN · 2026"], ["SP", "M", 33, "Concurso GCM Mauá · SP · 2026"], ["PR", "M", 33, "Concurso Prefeitura de Nova Tebas · PR · 2026"], ["PR", "P", 33, "Concurso Prefeitura de Ivaiporã · PR · 2026"], ["AM", "PP", 33, "Concurso CRA AM · AM · 2026"], ["MG", "M", 33, "Concurso Prefeitura de São Pedro da União · MG · 2026"], ["GO", "M", 33, "Concurso Prefeitura de São Luís de Montes Belos · GO · 2026"], ["PR", "P", 33, "Concurso Prefeitura de Bela Vista do Paraíso · PR · 2026"], ["RO", "P", 33, "Concurso Câmara de Candeias do Jamari · RO · 2026"], ["PI", "P", 33, "Concurso Câmara de Dom Expedito Lopes · PI · 2026"], ["SP", "P", 33, "Concurso Câmara de Itápolis · SP · 2026"], ["SP", "M", 33, "Concurso Prefeitura de Cubatão · SP · 2026"], ["SC", "P", 33, "Concurso Prefeitura de Jaborá · SC · 2026"], ["GO", "P", 33, "Concurso Prefeitura de Nova Aurora · GO · 2026"], ["SP", "P", 33, "Concurso Câmara de Jeriquara · SP · 2026"], ["AP", "M", 34, "Concurso Delegado Amapá · AP · 2026"], ["GO", "M", 38, "Concurso Prefeitura de Água Limpa · GO · 2026"], ["SP", "P", 35, "Concurso Câmara de Boituva · SP · 2026"], ["SP", "M", 35, "Concurso Câmara de Dois Córregos · SP · 2026"], ["SC", "P", 35, "Concurso Câmara de Capinzal · SC · 2026"], ["BA", "M", 36, "Concurso GCM Salvador · BA · 2026"], ["?", "M", 38, "Concurso Residência UFG · Nacional · 2026"], ["SP", "M", 38, "Concurso Câmara de Barão de Antonina · SP · 2026"], ["GO", "M", 38, "Concurso Prefeitura de Uirapuru · GO · 2026"], ["AP", "M", 39, "Concurso Polícia Civil AP · AP · 2026"], ["SP", "P", 39, "Concurso Prefeitura de Barra Bonita · SP · 2026"], ["MT", "M", 40, "Concurso Comodoro · MT · 2026"], ["GO", "P", 40, "Concurso Câmara de Vila Boa · GO · 2026"], ["PR", "P", 40, "Concurso Prefeitura de Nova Prata do Iguaçu · PR · 2026"], ["MG", "P", 41, "Concurso SMS Munhoz · MG · 2026"], ["SC", "P", 41, "Concurso Câmara de Descanso · SC · 2026"], ["BA", "M", 3, "Concurso Prefeitura de Riachão do Jacuípe · BA · 2026"], ["RS", "M", 41, "Concurso SME de Canela · RS · 2026"], ["Nacional", "Indefinido", 41, "Concurso Transpetro · Nacional · 2026"], ["MA", "M", 14, "Concurso Polícia Civil MA · MA · 2026"], ["AL", "G", 14, "Concurso SESAU AL · AL · 2026"], ["PR", "M", 14, "Concurso SEED PR Temporários · PR · 2026"], ["PE", "M", 18, "Concurso UFPE · PE · 2026"], ["BA", "P", 25, "Concurso Prefeitura de Jaborandi · BA · 2026"], ["MG", "M", 19, "Concurso Prefeitura de Faria Lemos · MG · 2026"], ["AL", "M", 17, "Concurso PC AL · AL · 2026"], ["MA", "M", 19, "Concurso Perícia Oficial MA · MA · 2026"], ["PA", "G", 17, "Concurso Seduc PA · PA · 2026"], ["RJ", "M", 25, "Concurso CRA RJ · RJ · 2026"], ["SC", "M", 25, "Concurso Sefaz SC · SC · 2026"], ["SP", "Indefinido", 27, "Concurso Detran SP · SP · 2026"], ["DF", "M", 27, "Concurso TCDF · DF · 2026"], ["PE", "P", 27, "Concurso GCM de Tamandaré · PE · 2026"], ["SC", "M", 28, "Concurso CASAN · SC · 2026"], ["PR", "P", 28, "Concurso Prefeitura de Tamarana · PR · 2026"], ["SC", "P", 32, "Concurso Câmara de São Joaquim · SC · 2026"], ["SP", "P", 32, "Concurso GCM de Itanhaém · SP · 2026"], ["CE", "P", 32, "Concurso Câmara de Meruoca · CE · 2026"], ["CE", "P", 32, "Concurso Câmara de Pires Ferreira · CE · 2026"], ["SC", "P", 32, "Concurso Prefeitura de Lontras · SC · 2026"], ["SP", "P", 41, "Concurso Prefeitura de Vera Cruz · SP · 2026"], ["SP", "P", 39, "Concurso SME de Birigui · SP · 2026"], ["CE", "P", 39, "Concurso Prefeitura de Horizonte · CE · 2026"], ["PR", "P", 32, "Concurso CRM PR · PR · 2026"], ["RJ", "M", 32, "Concurso Prefeitura de Tanguá · RJ · 2026"], ["SC", "PP", 32, "Concurso Prefeitura de Palmeira · SC · 2026"], ["PR", "P", 32, "Concurso Secretaria Municipal de Saúde de Castro · PR · 2026"], ["SC", "P", 32, "Concurso Prefeitura de Paraíso · SC · 2026 — Edital 002"], ["SP", "M", 32, "Concurso Prefeitura de Arealva · SP · 2026"], ["CE", "P", 32, "Concurso Prefeitura de Reriutaba · CE · 2026"], ["AP", "P", 32, "Concurso IFAP · AP · 2026"], ["RS", "P", 32, "Concurso Prefeitura de Barão de Cotegipe · RS · 2026"], ["SP", "M", 32, "Concurso Prefeitura de Conchal · SP · 2026"], ["RS", "P", 32, "Concurso Câmara de Portão · RS · 2026"], ["PE", "P", 32, "Concurso Câmara de Trindade · PE · 2026"], ["SP", "P", 32, "Concurso Câmara de Estrela do Norte · SP · 2026"], ["RS", "P", 32, "Concurso Prefeitura de Barão · RS · 2026"], ["RS", "P", 32, "Concurso Prefeitura de Portão · RS · 2026"], ["PR", "Indefinido", 32, "Concurso CREA PR · PR · 2026"], ["CE", "P", 32, "Concurso Câmara de Icapuí · CE · 2026"], ["PB", "P", 32, "Concurso PGM de Pirpirituba · PB · 2026"], ["PB", "P", 32, "Concurso PGM Pirpirituba · PB · 2026"], ["SP", "M", 31, "Concurso Prefeitura de Guarulhos · SP · 2026"], ["SP", "M", 31, "Concurso Prefeitura de Santana de Parnaíba · SP · 2026"], ["SP", "M", 31, "Concurso Mogi Mirim · SP · 2026"], ["Nacional", "M", 31, "Concurso UFRRJ · Nacional · 2026"], ["CE", "P", 31, "Concurso Câmara de Massapê · CE · 2026"], ["PR", "M", 31, "Concurso TJ PR Contador · PR · 2026"], ["SP", "P", 31, "Concurso Prefeitura de Paranapanema · SP · 2026"], ["PR", "P", 31, "Concurso TJ PR Contador · PR · 2026"], ["SC", "P", 31, "Concurso Município de Tangará · SC · 2026"], ["PB", "P", 31, "Concurso Câmara de Riachão do Poço · PB · 2026"], ["SP", "P", 31, "Concurso EMDAEP Dracena · SP · 2026"], ["SP", "M", 32, "Concurso Câmara de Colômbia · SP · 2026"], ["SC", "P", 32, "Residência SES SC · SC · 2026"], ["SC", "P", 34, "Concurso SEMED de Jaraguá do Sul · SC · 2026"], ["RN", "P", 39, "Concurso Prefeitura de Tangará · RN · 2026"], ["RS", "P", 35, "Concurso Prefeitura de São Pedro da Serra · RS · 2026"], ["SC", "P", 35, "Concurso Prefeitura de São José · SC · 2026"], ["SC", "P", 35, "Concurso Prefeitura de Vargeão · SC · 2026"], ["SC", "P", 35, "Concurso Prefeitura de Erval Velho · SC · 2026"], ["SC", "P", 35, "Concurso Prefeitura de Tunápolis · SC · 2026"], ["PI", "P", 36, "Concurso Prefeitura de Currais · PI · 2026"], ["RS", "PP", 38, "Concurso Prefeitura de Jacutinga · RS · 2026"], ["PA", "M", 38, "Concurso IFPA · PA · 2026"], ["SC", "P", 38, "Concurso Prefeitura de Ipumirim · SC · 2026"], ["SP", "P", 39, "Concurso Prefeitura de Itaju · SP · 2026"], ["BA", "M", 39, "Concurso Prefeitura de Catu · BA · 2026"], ["SP", "P", 39, "Concurso Prefeitura de Arandu · SP · 2026"], ["SP", "P", 41, "Concurso Prefeitura de Icém · SP · 2026"], ["SC", "P", 41, "Concurso Prefeitura de Trombudo Central · SC · 2026"], ["SC", "P", 41, "Concurso SME Gaspar · SC · 2026"], ["SP", "P", 41, "Concurso Câmara de Rinópolis · SP · 2026"], ["SP", "PP", 0, "Concurso Prefeitura de Bauru · SP · 2026"], ["SP", "M", 1, "Concurso Secretaria Municipal de Saúde de Bauru · SP · 2026"], ["PR", "P", 1, "Concurso Câmara de Imbituva · PR · 2026"], ["SP", "P", 1, "Concurso ISS Santos · SP · 2026"], ["SP", "M", 1, "Concurso SMS de Santos · SP · 2026"], ["SP", "P", 5, "Concurso Câmara de Santa Lúcia · SP · 2026"], ["RS", "P", 7, "Concurso Prefeitura de Arvorezinha · RS · 2026"], ["TO", "P", 7, "Concurso Câmara de Peixe · TO · 2026"], ["SP", "M", 7, "Concurso Prefeitura de Salto · SP · 2026"], ["SP", "M", 8, "Concurso Prefeitura de Ipaussu · SP · 2026"], ["PR", "P", 10, "Concurso GCM de Matinhos · PR · 2026"], ["SP", "P", 10, "Concurso Prefeitura de Rinópolis · SP · 2026"], ["TO", "P", 10, "Concurso Câmara de Araguatins · TO · 2026"], ["SP", "M", 11, "Concurso SAAE de Dois Córregos · SP · 2026"], ["SP", "PP", 1, "Concurso Câmara de Lindóia · SP · 2026"], ["SP", "M", 11, "Concurso Prefeitura de Cruzália · SP · 2026"]];
+const REG = {N:["AM","RR","AP","PA","TO","RO","AC"],NE:["MA","PI","CE","RN","PB","PE","AL","SE","BA"],CO:["MT","MS","GO","DF"],SE:["SP","RJ","MG","ES"],S:["PR","SC","RS"],NAC:["Nacional"]};
+const ORDER = ["N","NE","CO","SE","S","NAC"];
+const REGNAME = {N:"Norte",NE:"Nordeste",CO:"Centro-Oeste",SE:"Sudeste",S:"Sul",NAC:"Nac."};
+const PORTES = ["PP","P","M","G","Estratégico","Indefinido"];
+const PCOL = {PP:"var(--p1)",P:"var(--p2)",M:"var(--p3)",G:"var(--p4)","Estratégico":"var(--p5)","Indefinido":"#8A9BA3"};
+const PR = {PP:2.6,P:3.4,M:4.6,G:6,"Estratégico":7,"Indefinido":3};
+const DAYS = 42;
+const ns = "http://www.w3.org/2000/svg";
+const svg = document.getElementById("scopeSvg");
+function el(t,a){const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e}
+// region weights by count, min share
+const regOf = uf => ORDER.find(r=>REG[r].includes(uf)) || "NAC";
+const counts = {}; ORDER.forEach(r=>counts[r]=0); BLIPS.forEach(b=>counts[regOf(b[0])]++);
+const tot = BLIPS.length; let acc = -90; const span = {};
+ORDER.forEach(r=>{const w = Math.max(counts[r]/tot, .06); span[r]=w});
+const sw = Object.values(span).reduce((a,b)=>a+b,0);
+ORDER.forEach(r=>{const deg = span[r]/sw*360; span[r]={a0:acc,a1:acc+deg}; acc+=deg});
+const R = 235, R0 = 18, RD = 205;
+// rings
+const ring = "var(--scope-line)";
+svg.appendChild(el("circle",{cx:0,cy:0,r:R,fill:"none",stroke:"rgba(255,255,255,.22)","stroke-width":1}));
+[0.25,.5,.75,1].forEach((f,i)=>{svg.appendChild(el("circle",{cx:0,cy:0,r:R0+(RD-R0)*f,fill:"none",stroke:"rgba(255,255,255,.14)","stroke-width":1}))});
+const ringDates = ["24/08","04/09","14/09","25/09"];
+[0.25,.5,.75,1].forEach((f,i)=>{const t=el("text",{x:4,y:-(R0+(RD-R0)*f)+12,fill:"rgba(242,182,187,.75)","font-size":9.5,"font-family":"IBM Plex Mono, monospace"});t.textContent=ringDates[i];svg.appendChild(t)});
+ORDER.forEach(r=>{
+  const a=span[r].a0*Math.PI/180;
+  svg.appendChild(el("line",{x1:0,y1:0,x2:Math.cos(a)*R,y2:Math.sin(a)*R,stroke:"rgba(255,255,255,.14)","stroke-width":1}));
+  const m=((span[r].a0+span[r].a1)/2)*Math.PI/180;
+  const t=el("text",{x:Math.cos(m)*(R-14),y:Math.sin(m)*(R-14)+3,fill:"rgba(242,182,187,.9)","font-size":10.5,"text-anchor":"middle","font-family":"IBM Plex Mono, monospace","letter-spacing":"1"});
+  t.textContent=REGNAME[r].toUpperCase()+" "+counts[r]; svg.appendChild(t);
+});
+svg.appendChild(el("circle",{cx:0,cy:0,r:3,fill:"#F0505D"}));
+// deterministic jitter
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+const ufIdx = {}; ORDER.forEach(r=>REG[r].forEach((u,i)=>ufIdx[u]=[i,REG[r].length]));
+const bcol = {PP:"#7A2530",P:"#B8323F",M:"#E4505C",G:"#F59AA2","Estratégico":"#FFFFFF","Indefinido":"#7F939B"};
+const tip=document.getElementById("tip");
+BLIPS.sort((a,b)=>PR[b[1]]-PR[a[1]]).forEach(b=>{
+  const r=regOf(b[0]); const s=span[r]; const pad=4;
+  const [i,n]=ufIdx[b[0]]||[0,1];
+  const sub0=s.a0+pad+(s.a1-s.a0-2*pad)*i/n, sub1=s.a0+pad+(s.a1-s.a0-2*pad)*(i+1)/n;
+  const ang=(sub0+(sub1-sub0)*(.15+.7*rnd()))*Math.PI/180;
+  const rad=Math.min(R0+(RD-R0)*Math.min(b[2],DAYS)/DAYS+(rnd()-.5)*5, RD+3);
+  const c=el("circle",{cx:(Math.cos(ang)*rad).toFixed(1),cy:(Math.sin(ang)*rad).toFixed(1),r:PR[b[1]]||3,fill:bcol[b[1]]||"#7F939B",stroke:"#121821","stroke-width":1.2,"fill-opacity":.92,tabindex:-1});
+  c.addEventListener("mousemove",e=>{tip.hidden=false;tip.textContent=b[3]+" · "+b[0]+" · porte "+b[1];tip.style.left=Math.min(e.clientX+12,innerWidth-290)+"px";tip.style.top=(e.clientY+12)+"px"});
+  c.addEventListener("mouseleave",()=>tip.hidden=true);
+  svg.appendChild(c);
+});
+const lg=document.getElementById("legend");
+[["PP",7],["P",182],["M",133],["G",3],["Estratégico",1]].forEach(([p,n])=>{lg.insertAdjacentHTML("beforeend",`<span><i style="background:${bcol[p]}"></i>${p} ${n}</span>`)});
+
+// porte bars
+const porte=[["PP",7],["P",182],["M",133],["G",3],["Estratégico",1],["Indefinido",4]];
+const pmax=182;
+document.getElementById("porteBars").innerHTML=porte.map(([p,n])=>`<div class="bar" title="${p}: ${n} concursos"><span>${p}</span><div class="t"><div style="width:${Math.max(n/pmax*100,.8)}%;background:${PCOL[p]}"></div></div><span class="v">${n}</span></div>`).join("")+`<p class="note">G, Estratégico e Lendário seguem no fluxo manual do time; a esteira foi desenhada para PP, P e M.</p>`;
+
+// weeks
+const wk=[["10–16 ago",15],["17–23 ago",13],["24–30 ago",23],["31 ago–6 set",35],["7–13 set",130],["14–20 set",195],["21–25 set",58,1]];
+document.getElementById("weeks").innerHTML=wk.map(([d,n,p])=>`<div class="wk${p?" part":""}" title="${d}: ${n} campanhas${p?" (semana em curso)":""}"><span class="val">${n}</span><div class="col" style="height:${n/195*150}px"></div><span class="dt">${d}</span></div>`).join("");
+document.getElementById("weeks").insertAdjacentHTML("afterend",`<p class="note">Barra tracejada: semana em curso, até sexta, 25/09.</p>`);
+
+// map tile grid (approximate geography)
+const UF={SP:86,MG:38,SC:38,GO:24,RS:23,CE:19,PR:19,PB:10,PE:9,RN:9,AL:8,BA:8,RJ:7,MA:4,AP:4,RO:3,PI:3,ES:3,TO:2,PA:2,AM:2,MT:1,DF:1,MS:1};
+const grid=[
+ ["","RR","AP","","","",""],
+ ["AM","PA","","MA","CE","RN",""],
+ ["AC","RO","TO","PI","PB","PE",""],
+ ["","MT","GO","BA","SE","AL",""],
+ ["","MS","DF","MG","ES","",""],
+ ["","","PR","SP","RJ","",""],
+ ["","","SC","","","",""],
+ ["","","RS","","","",""]];
+const shade=n=>n>=50?["var(--p5)","var(--bg)"]:n>=30?["var(--p4)","var(--bg)"]:n>=15?["var(--p3)","var(--bg)"]:n>=5?["var(--p2)","var(--ink)"]:["var(--p1)","var(--ink)"];
+document.getElementById("map").innerHTML=grid.flat().map(u=>{
+  if(!u) return `<div></div>`;
+  const n=UF[u]; if(!n) return `<div class="uf empty" title="${u}: nenhum ainda">${u}</div>`;
+  const [bg,fg]=shade(n); return `<div class="uf" style="background:${bg};color:${fg};border-color:${bg}" title="${u}: ${n} concursos">${u}<b>${n}</b></div>`}).join("");
+const topUF=[["SP",86],["MG",38],["SC",38],["GO",24],["RS",23],["CE",19],["PR",19]];
+document.getElementById("ufBars").innerHTML=topUF.map(([u,n])=>`<div class="bar"><span>${u}</span><div class="t"><div style="width:${n/86*100}%;background:var(--accent)"></div></div><span class="v">${n}</span></div>`).join("");
+
+// quality rings
+const Q=[
+ {v:341,t:470,lbl:"distribuídas sem nenhuma intervenção",chip:["good","73% de primeira"],c:"var(--accent)"},
+ {v:80,t:470,lbl:"passaram pelo agente corretor antes de serem distribuídas",chip:["good","17% autocorrigidas"],c:"var(--p2)"},
+ {v:41,t:565,lbl:"campanhas paradas em erro, aguardando ajuste",chip:["warn","7% do total"],c:"var(--p4)"},
+ {v:188,t:1116,lbl:"itens rejeitados pelo time (128 de mídia paga)",chip:["warn","17% dos itens"],c:"var(--p2)"}];
+document.getElementById("quality").innerHTML=Q.map(q=>{const f=q.v/q.t, C=2*Math.PI*38;
+ return `<div class="panel gauge"><svg class="ring" viewBox="0 0 92 92" role="img" aria-label="${q.v} de ${q.t}"><circle cx="46" cy="46" r="38" fill="none" stroke="var(--accent-soft)" stroke-width="8"/><circle cx="46" cy="46" r="38" fill="none" stroke="${q.c}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(f*C).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 46 46)"/><text x="46" y="51" text-anchor="middle" font-family="Schibsted Grotesk, sans-serif" font-weight="800" font-size="19" fill="var(--ink)">${q.v}</text></svg><span class="chip ${q.chip[0]}">${q.chip[1]}</span><p style="font-size:13.5px;color:var(--ink2)">${q.lbl} <span class="mono" style="color:var(--muted);font-size:11px">(de ${q.t.toLocaleString("pt-BR")})</span></p></div>`}).join("");
+</script>
+</body>
+</html>
