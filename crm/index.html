@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Diário de bordo do CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#FFFFFF; --ink:#111114; --ink2:#3D3D45; --muted:#6E6E78; --line:#E7E7EB; --soft:#F5F5F7;
+  --red:#DD303E; --red-ink:#B91C2A; --red-soft:#FDECEE;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif; --sans:Geist,"Segoe UI",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;padding-inline:20px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.025em}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.88em}
+code{background:var(--soft);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:4px}
+
+.prog{position:sticky;top:0;z-index:30;margin-inline:-20px;padding-inline:20px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.prog-in{max-width:1120px;margin:0 auto;height:48px;display:flex;align-items:center;gap:18px}
+.prog b{font-family:var(--display);font-weight:800;font-size:15px;white-space:nowrap;letter-spacing:-.01em}
+.prog nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
+.prog nav::-webkit-scrollbar{display:none}
+.prog a{font-size:13px;text-decoration:none;color:var(--muted);padding:5px 10px;border-radius:999px;white-space:nowrap}
+.prog a span{font-family:var(--mono);font-size:11px;margin-right:5px;color:var(--red-ink)}
+.prog a:hover,.prog a.on{color:var(--ink);background:var(--soft)}
+.bar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--red);width:0}
+
+.cover{background:linear-gradient(180deg,#F7F7F9 0%,#FFFFFF 100%);border-bottom:1px solid var(--line);margin-inline:-20px;padding-inline:20px}
+.cover-in{max-width:1120px;margin:0 auto;padding-block:64px 72px}
+.kick{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red-ink)}
+.cover h1{font-size:clamp(40px,6vw,76px);font-weight:800;line-height:.98;margin-top:18px}
+.cover h1 em{font-style:normal;color:var(--red)}
+.cover .lead{margin-top:22px;color:var(--ink2);font-size:18px;max-width:62ch}
+.cover-stats{margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);max-width:860px}
+.cover-stats>div{padding:16px 16px 0 0}
+.cover-stats>div+div{padding-left:16px;border-left:1px solid var(--line)}
+.cover-stats .v{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;letter-spacing:-.03em}
+.cover-stats .v.hot{color:var(--red)}
+.cover-stats .l{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+main{max-width:1120px;margin:0 auto}
+.ch{padding-block:88px 24px;scroll-margin-top:56px}
+.ch-head{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:start}
+.ch-num{font-family:var(--mono);font-size:13px;color:var(--red-ink);border-top:2px solid var(--red);padding-top:10px;letter-spacing:.06em}
+.ch h2{font-size:clamp(28px,3.8vw,46px);font-weight:800;line-height:1.05}
+.ch h2 .r{color:var(--red)}
+.ch .say{margin-top:14px;color:var(--ink2);font-size:18px;max-width:62ch}
+.ch-body{margin-top:40px;margin-left:144px;display:flex;flex-direction:column;gap:28px}
+.ch-body h3{font-size:21px;font-weight:700}
+.hint{font-size:14px;color:var(--muted);max-width:72ch;line-height:1.55}
+.hint b{color:var(--ink2);font-weight:600}
+.row{display:grid;gap:28px}
+.r2{grid-template-columns:1fr 1fr}
+
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:stretch;gap:12px}
+.node{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--bg)}
+.node.hot{border-color:var(--red);background:var(--red-soft)}
+.node h3{font-size:19px}
+.node p{font-size:14px;color:var(--ink2);margin-top:6px;line-height:1.45}
+.node .tag{font-family:var(--mono);font-size:11.5px;color:var(--red-ink);margin-top:10px}
+.arrow{align-self:center;color:var(--muted)}
+
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:13px}
+td:first-child{font-weight:500}
+td .s{display:block;color:var(--muted);font-size:13px;margin-top:2px;line-height:1.4}
+.badge{display:inline-flex;align-items:center;font-size:12px;font-weight:500;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.badge.m{background:var(--red-soft);color:var(--red-ink)} .badge.p{background:var(--soft);color:var(--ink2)}
+
+.list{list-style:none;margin:0;padding:0}
+.list li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;gap:12px}
+.list li:first-child{border-top:1px solid var(--line)}
+.list li i{color:var(--red);font-style:normal;font-weight:700;flex:none}
+.list li b{font-weight:600}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14.5px;color:var(--ink2)}
+ol.steps b{color:var(--ink)}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.vs>div{padding:24px}
+.vs>div:first-child{background:var(--red-soft);border-right:1px solid var(--line)}
+.vs h3{font-size:22px}
+.vs>div:first-child h3{color:var(--red-ink)}
+.vs p{margin-top:8px;font-size:14.5px;color:var(--ink2)}
+
+.acc{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.acc details+details{border-top:1px solid var(--line)}
+.acc summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 2px;cursor:pointer;font-weight:500;font-size:15px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary:hover{text-decoration:underline;text-underline-offset:4px}
+.acc summary svg{transition:transform .2s;flex:none;color:var(--muted)}
+.acc details[open] summary svg{transform:rotate(180deg)}
+.acc .in{padding:0 2px 20px}
+
+.closing{background:var(--soft);margin-inline:-20px;padding-inline:20px;margin-top:96px}
+.closing-in{max-width:1120px;margin:0 auto;padding-block:64px}
+.closing h2{font-size:clamp(28px,3.8vw,42px);font-weight:800}
+.closing .say{margin-top:12px;color:var(--ink2);font-size:17px;max-width:66ch}
+.open{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:0 32px}
+.open li{padding:14px 0;border-bottom:1px solid var(--line);font-size:14.5px;display:flex;gap:12px}
+.open li .n{font-family:var(--mono);font-size:12px;color:var(--red-ink);flex:none;padding-top:3px}
+.open li b{display:block;font-weight:600}
+.open li span.d{color:var(--ink2)}
+footer{max-width:1120px;margin:0 auto;padding-block:40px 64px;font-size:13.5px;color:var(--muted)}
+
+@media (max-width:960px){
+  .r2,.vs,.open{grid-template-columns:1fr}
+  .vs>div:first-child{border-right:0;border-bottom:1px solid var(--line)}
+  .ch-head{grid-template-columns:1fr;gap:12px}
+  .ch-num{width:fit-content}
+  .ch-body{margin-left:0}
+  .flow{grid-template-columns:1fr}
+  .arrow{justify-self:center;transform:rotate(90deg)}
+  .cover-stats{grid-template-columns:1fr 1fr}
+  .cover-stats>div:nth-child(3){border-left:0;padding-left:0}
+}
+@media (max-width:520px){
+  .cover-stats{grid-template-columns:1fr}
+  .cover-stats>div+div{border-left:0;padding-left:0;border-top:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+
+<div class="prog"><div class="prog-in"><b>Diário de bordo · CRM</b><nav id="toc" aria-label="Capítulos"></nav></div><div class="bar" id="bar"></div></div>
+
+<header class="cover">
+  <div class="cover-in">
+    <div class="kick">Esteira de marketing Cauda Longa · Entregas de CRM</div>
+    <h1>Todas as regras que o agente aplica <em>ao CRM</em></h1>
+    <p class="lead">Manual de referência para o time de CRM refinar a esteira. Cada regra diz se ela só <b>orienta</b> o modelo ou se <b>reprova</b> a copy automaticamente — a diferença que mais importa na hora de pedir um ajuste.</p>
+    <p class="mono" style="margin-top:14px;font-size:12.5px;color:var(--muted)">Lido do código em produção em 27/10/2026</p>
+    <div class="cover-stats">
+      <div><div class="v">6</div><div class="l">disparos na régua de Lançamento e Conversão, em 7 dias</div></div>
+      <div><div class="v">4</div><div class="l">peças de CRM na Antecipação</div></div>
+      <div><div class="v">P e M</div><div class="l">portes que recebem CRM; PP nunca recebe</div></div>
+      <div><div class="v hot">11</div><div class="l">pontos em aberto para o time decidir</div></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="ch" id="visao" data-t="Visão geral">
+  <div class="ch-head"><div class="ch-num">00</div><div>
+    <h2>Uma peça de CRM passa por <span class="r">três agentes</span></h2>
+    <p class="say">O 2a decide quais peças existem, o 2b escreve e valida o texto, e o 2e copia o resultado para o Monday e para a planilha sem alterar uma palavra.</p>
+  </div></div>
+  <div class="ch-body">
+    <div class="flow">
+      <div class="node"><h3>Radar</h3><p>Acha o concurso: situação, porte e dados.</p></div>
+      <div class="arrow" aria-hidden="true"><svg width="22" height="12" viewBox="0 0 22 12"><path d="M0 6h19M14 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <div class="node"><h3>2a · Pacote</h3><p>Decide quais peças, por tipo × porte.</p><div class="tag">capítulo 01</div></div>
+      <div class="arrow" aria-hidden="true"><svg width="22" height="12" viewBox="0 0 22 12"><path d="M0 6h19M14 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <div class="node hot"><h3>2b · Copy</h3><p>Escreve e valida e-mail e WhatsApp. Reprovada 2× vai para Erro e passa pelo corretor 2f, com aprovação humana.</p><div class="tag">capítulos 02 e 03</div></div>
+      <div class="arrow" aria-hidden="true"><svg width="22" height="12" viewBox="0 0 22 12"><path d="M0 6h19M14 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+      <div class="node"><h3>2e · Entrega</h3><p>Monday + planilha CRM; calcula o D0. O time de CRM revisa e dispara.</p><div class="tag">capítulo 04</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="quando" data-t="Quando há CRM">
+  <div class="ch-head"><div class="ch-num">01</div><div>
+    <h2>O CRM depende só de <span class="r">tipo e porte</span></h2>
+    <p class="say">P e M sempre recebem, PP nunca recebe, e a quantidade de vagas não muda isso. Quem decide é o agente 2a, pela Matriz do Enxoval validada com Mídia em 12/08/2026.</p>
+  </div></div>
+  <div class="ch-body">
+    <p class="hint">O tipo vem da coluna Situação do Radar: <b>Banca definida</b> = Antecipação · <b>Edital publicado</b> = Lançamento · <b>Inscrições abertas</b> = Conversão. Portes G, GG e Lendário estão fora da automação.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Tipo</th><th>PP</th><th>P</th><th>M</th></tr></thead>
+      <tbody>
+        <tr><td>Antecipação</td><td><span class="badge p">sem CRM</span></td><td><span class="badge m">4 peças “Banca”</span></td><td><span class="badge m">4 peças “Banca”</span></td></tr>
+        <tr><td>Lançamento</td><td><span class="badge p">sem CRM</span></td><td><span class="badge m">régua de 6 disparos</span></td><td><span class="badge m">régua de 6 disparos</span></td></tr>
+        <tr><td>Conversão</td><td><span class="badge p">sem CRM</span></td><td><span class="badge m">régua de 6 disparos</span></td><td><span class="badge m">régua de 6 disparos</span></td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="row r2">
+      <div>
+        <h3>Antecipação · 4 peças, sem dia de disparo</h3>
+        <div class="tw" style="margin-top:12px"><table>
+          <thead><tr><th>Peça</th><th>Botão leva para</th></tr></thead>
+          <tbody>
+            <tr><td>E-mail informativo<span class="s mono">CRM_EMAIL_INFORMATIVO</span></td><td>Blog</td></tr>
+            <tr><td>WhatsApp para grupos (sem vocativo)<span class="s mono">CRM_WHATSAPP_GRUPOS</span></td><td>Blog</td></tr>
+            <tr><td>E-mail de vendas da Assinatura Ilimitada<span class="s mono">CRM_EMAIL_VENDAS_AI</span></td><td>Vendas</td></tr>
+            <tr><td>WhatsApp de vendas da Assinatura Ilimitada<span class="s mono">CRM_WHATSAPP_VENDAS_AI</span></td><td>Vendas</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <h3>Lançamento e Conversão · 3 e-mails + 3 WhatsApps</h3>
+        <div class="tw" style="margin-top:12px"><table>
+          <thead><tr><th>Dia</th><th>Canal</th><th>Botão leva para</th></tr></thead>
+          <tbody>
+            <tr><td>D0</td><td>E-mail 1</td><td>A: blog (se houver LINK_BLOG), senão vendas · B: vendas</td></tr>
+            <tr><td>D0</td><td>WhatsApp 1</td><td>Vendas</td></tr>
+            <tr><td>D1</td><td>WhatsApp 2</td><td>Vendas</td></tr>
+            <tr><td>D3</td><td>E-mail 2</td><td>A: blog (se houver), senão vendas · B: vendas</td></tr>
+            <tr><td>D5</td><td>WhatsApp 3</td><td>Vendas</td></tr>
+            <tr><td>D7</td><td>E-mail 3</td><td>Vendas</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <ul class="list">
+      <li><i>→</i><span><b>Não há push nem SMS</b> no pacote.</span></li>
+      <li><i>→</i><span><b>Poucas vagas não tira CRM.</b> Desde 09/09, concurso com menos de 50 vagas (ou “Só CR”) perde só a mídia paga. Desde 28/09: M mantém mídia paga sempre; P só com 50+ vagas; PP ganha mídia paga com 50+ vagas, mas continua sem CRM.</span></li>
+      <li><i>→</i><span><b>Conversão sem Lançamento.</b> Se o Radar pular o Lançamento e as inscrições abriram há no máximo 3 dias, o 2a cria o Lançamento antes — o concurso recebe duas réguas.</span></li>
+    </ul>
+
+    <div class="acc">
+      <details><summary>Filtros que o item do Radar precisa passar para virar campanha<svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary><div class="in">
+        <ol class="steps">
+          <li><b>Gerido</b> marcado.</li>
+          <li><b>Porte</b> preenchido (vazio ou “Indefinido” fica aguardando) e igual a PP, P ou M.</li>
+          <li><b>Situação</b> entre as três acima.</li>
+          <li><b>Dados mínimos</b>: órgão e situação (federal); + UF (estadual); + cidade (municipal). Vagas também, exceto “Só CR”.</li>
+          <li><b>Fim das inscrições</b> preenchido, inclusive na Antecipação (desde 18/08).</li>
+          <li><b>Fonte factual</b> (desde 10/09): Lançamento e Conversão precisam de link do edital ou de post real do blog Gran. Antecipação é isenta.</li>
+          <li><b>Prazo não vencido</b>: fim das inscrições anterior a hoje = descartado.</li>
+          <li><b>Não duplicado</b>: mesmo item do Radar + tipo, ou mesmo órgão · cidade · UF · tipo, não gera segunda campanha.</li>
+        </ol>
+      </div></details>
+      <details><summary>O que a copy de CRM recebe do briefing<svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary><div class="in">
+        <ul class="list">
+          <li><i>·</i><span><b>VAGAS</b>: número cru; “Só CR” vira “Cadastro de reserva”. O tamanho do CR só aparece se a soma das tabelas do edital bater (desde 07/10).</span></li>
+          <li><i>·</i><span><b>SALARIO</b>: faixa de vencimento sem benefícios; se o Radar só tiver benefício, vira “A confirmar”.</span></li>
+          <li><i>·</i><span><b>FIM_INSCRICOES</b>: vai vazio na Antecipação, para a copy não anunciar prazo que ainda não existe.</span></li>
+          <li><i>·</i><span><b>LINK_BLOG</b>: decide o botão A dos e-mails D0 e D3.</span></li>
+          <li><i>·</i><span><b>LINK_EDITAL</b>: fonte dos fatos e link autorizado.</span></li>
+          <li><i>·</i><span><b>CURSO_GRAN / LINK_CURSO_GRAN</b>: link <code>/concurso/&lt;slug&gt;</code> do site, só quando “Sim”.</span></li>
+          <li><i>·</i><span>Também: órgão, sigla curta, cargo, escolaridade, cidade, UF, esfera. “A confirmar” = dado inexistente: o campo some da copy. Datas nunca são deduzidas.</span></li>
+        </ul>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="editorial" data-t="Diretrizes">
+  <div class="ch-head"><div class="ch-num">02</div><div>
+    <h2>Diretrizes editoriais: o que o modelo <span class="r">é orientado</span> a escrever</h2>
+    <p class="say">O 2b escreve com a skill gran-copy-campanha v2.4.3, em produção desde 22/09/2026. Estas regras o modelo lê e o Revisor aplica por julgamento, mas o código não mede.</p>
+  </div></div>
+  <div class="ch-body">
+    <p class="hint">O modelo recebe as instruções gerais, a skill (SKILL.md inteiro + do <code>crm.md</code> só as partes gerais, a seção da peça pedida e a linha do momento) e, se houver régua, as instruções da régua (<code>prompts/_crm_regua.md</code>). Ele só escreve e-mail e WhatsApp; os contratos de push, SMS, pop-up e banner da skill não são enviados.</p>
+
+    <div class="row r2">
+      <div>
+        <h3>Estrutura das peças</h3>
+        <ul class="list" style="margin-top:12px">
+          <li><i>·</i><span><b>E-mail da régua</b>: 5 campos — assunto, bloco_a, cta_a, bloco_b, cta_b. O código monta o corpo como bloco A · 👇 · CTA A · bloco B · 👇 · CTA B.</span></li>
+          <li><i>·</i><span><b>bloco_a</b> é informativo (convida ao blog quando há LINK_BLOG, sem colar o endereço); <b>bloco_b</b> é a virada para a Assinatura Ilimitada. O cta_a precisa servir para blog e vendas, porque o destino é escolhido pelo código.</span></li>
+          <li><i>·</i><span><b>WhatsApp da régua</b>: 1 campo, em 5 blocos — fato, verdade, sugestão, produto, convite. Termina numa frase de ação; botão e link são do template.</span></li>
+          <li><i>·</i><span><b>E-mails de Antecipação</b>: assunto + corpo.</span></li>
+          <li><i>·</i><span>Assinatura, rodapé e descadastro são do template. Não existe campo de prévia (preheader).</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Ângulo de cada disparo</h3>
+        <div class="tw" style="margin-top:12px"><table>
+          <thead><tr><th>Disparo</th><th>Ângulo</th><th>Preço?</th></tr></thead>
+          <tbody>
+            <tr><td>D0</td><td>O fato + o próximo passo</td><td>Não</td></tr>
+            <tr><td>D1 WhatsApp</td><td>A paralisia do pós-edital</td><td>Não</td></tr>
+            <tr><td>D3 e-mail</td><td>Autoridade, só com dados da fonte</td><td>Não</td></tr>
+            <tr><td>D5 WhatsApp</td><td>Urgência + 5% de desconto</td><td>Só 5%</td></tr>
+            <tr><td>D7 e-mail</td><td>Objeções + última chamada + 5%</td><td>Só 5%</td></tr>
+          </tbody>
+        </table></div>
+        <p class="hint" style="margin-top:10px">Nenhum disparo repete a frase-chave de outro.</p>
+      </div>
+    </div>
+
+    <div class="row r2">
+      <div>
+        <h3>Tamanho (meta da skill)</h3>
+        <div class="tw" style="margin-top:12px"><table>
+          <thead><tr><th>Campo</th><th>Meta</th></tr></thead>
+          <tbody>
+            <tr><td>Assunto</td><td>30–48 caracteres, teto 55, sem “!”</td></tr>
+            <tr><td>CTA de botão</td><td>até 20 caracteres, imperativo, CAIXA ALTA, sem ponto</td></tr>
+            <tr><td>Corpo do e-mail</td><td>110–180 palavras, teto 215; blocos A e B com 2+ frases</td></tr>
+            <tr><td>WhatsApp</td><td>350–560 caracteres (mediana 434); edital publicado 350–450</td></tr>
+            <tr><td>1ª linha do WhatsApp</td><td>até 60 caracteres, abrindo pela entidade</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <h3>Tom, léxico e fatos</h3>
+        <ul class="list" style="margin-top:12px">
+          <li><i>·</i><span>Segunda pessoa (“você”); a marca fala no plural (“Separamos”).</span></li>
+          <li><i>·</i><span>“pra / tá / né” pode; “vc / td / gnt”, inglês e “prezados” não. Evitar “estratégia” e “direção” (concorrentes).</span></li>
+          <li><i>·</i><span>“!”: nenhum no assunto, 1 no e-mail, até 2–3 no WhatsApp. Urgência como porta aberta, não ameaça.</span></li>
+          <li><i>·</i><span>Fatos só do edital ou do blog; dado ausente é omitido. Salário em faixa ou “até R$ X”.</span></li>
+          <li><i>·</i><span>Proibido derivar dia da semana, “faltam X dias”, superlativos. Cargo não confirmado: só a escolaridade.</span></li>
+          <li><i>·</i><span>Antecipação não afirma estágio nem banca sem o dado; Conversão nunca diz “acabou de sair”.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="reprova" data-t="O que reprova">
+  <div class="ch-head"><div class="ch-num">03</div><div>
+    <h2>Regras que <span class="r">reprovam</span> a copy automaticamente</h2>
+    <p class="say">Estas são código: se a copy viola, ela volta para reescrita. Valem para a régua de Lançamento e Conversão; a Antecipação segue só as marcadas como “todas”.</p>
+  </div></div>
+  <div class="ch-body">
+    <div class="tw"><table>
+      <thead><tr><th>Regra</th><th>Reprova quando</th><th>Vale para</th></tr></thead>
+      <tbody>
+        <tr><td>Tamanho do WhatsApp</td><td>menos de 120 ou mais de 600 caracteres</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Corpo do e-mail</td><td>menos de 300 caracteres ou menos de 2 parágrafos</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Campos do e-mail</td><td>qualquer um dos 5 campos vazio</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Peças pedidas</td><td>peça ou campo que não foi pedido</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Emoji</td><td>nenhum emoji, ou mais de 3 “expressivos” (✅ 📌 👇 👉 não contam)</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Final do WhatsApp</td><td>termina em emoji</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Formatação</td><td><code>**negrito duplo**</code> ou <code>__itálico duplo__</code></td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>URL no WhatsApp</td><td>qualquer endereço no texto, com ou sem http</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Rótulo de botão</td><td>“COMEÇAR A ESTUDAR”, “APROVEITAR DESCONTO”… em caixa alta no meio do texto</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Variáveis</td><td>qualquer merge tag: <code>%%Nome%%</code>, <code>{{…}}</code>, <code>[CONFIRMAR]</code>… (fora da régua, só <code>%%Nome%%</code> passa)</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Placeholders</td><td><code>[cidade]</code>, <code>[link]</code>, <code>XXX</code></td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Preço em D0, D1, D3</td><td>qualquer %, “desconto” ou R$ que não seja o salário da fonte</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Preço em D5, D7</td><td>percentual diferente de 5%, código de cupom, “válido até”, “expira”</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Urgência de um dia</td><td>“só hoje”, “últimas horas” fora do D5 WhatsApp</td><td><span class="badge m">régua</span></td></tr>
+        <tr><td>Fatos</td><td>vagas, R$ ou data sem evidência no edital/blog, ou atribuído ao cargo errado</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Inscrições</td><td>“abertas” fora da Conversão; “encerradas” nunca</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Garantias</td><td>“aprovação/vaga garantida”, “passe de primeira”, “método infalível”; outro “garantido” só se estiver entre as 15 claims liberadas</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Condição especial</td><td>“condição especial nos cursos” sem a promoção configurada</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Vocabulário interno</td><td>“briefing”, “porte”, “slot”, “pacote”, “paleta”, “tipo de campanha”</td><td><span class="badge p">todas</span></td></tr>
+        <tr><td>Revisor</td><td>apaga um dado autorizado que estava citado</td><td><span class="badge p">todas</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="hint">Assunto e CTA só precisam não estar vazios: os tetos de 55 e 20 caracteres do capítulo 02 não são checados.</p>
+
+    <div class="vs">
+      <div><h3>Corrigido pelo código, sem reprovar</h3><p><code>%%Nome%%</code> usado como vocativo (“Oi, %%Nome%%,”) é apagado. Rótulo de botão na última linha, seta solta e emoji no final também.</p></div>
+      <div><h3>Só avisa</h3><p>Fatos derivados (dia da semana, “faltam X dias”) são registrados em log, mas hoje não reprovam.</p></div>
+    </div>
+
+    <div class="row r2">
+      <div>
+        <h3>Quando a copy falha</h3>
+        <ol class="steps" style="margin-top:12px">
+          <li>Uma violação gera um reenvio ao modelo com o pedido de correção.</li>
+          <li>O Revisor sempre roda; depois dele, até 2 reenvios.</li>
+          <li>Peças aprovadas são guardadas; só as reprovadas ficam faltando.</li>
+          <li>Reprovada após 2 reenvios: a campanha vai para <b>Erro</b> e o corretor 2f propõe um ajuste para aprovação humana.</li>
+          <li>Outras falhas voltam para a fila até 3 vezes antes de virar Erro.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Segmentação</h3>
+        <p class="hint" style="margin-top:12px">Desde 22/10, o 2b gera a lista de cargos da coluna <code>segmentacao</code>: cada cargo precisa existir no edital, o que vem depois de traço ou parênteses é cortado, até 80 caracteres por cargo, iniciais maiúsculas. A segmentação não altera a copy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="entrega" data-t="Entrega e D0">
+  <div class="ch-head"><div class="ch-num">04</div><div>
+    <h2>Monday, planilha e <span class="r">data do D0</span></h2>
+    <p class="say">O agente 2e só transporta: nunca gera, edita ou resume a copy. A linha da planilha é sempre a última coisa escrita, porque é ela que dispara envio de verdade.</p>
+  </div></div>
+  <div class="ch-body">
+    <div class="row r2">
+      <div>
+        <h3>Monday · board Automação Cauda Longa</h3>
+        <ul class="list" style="margin-top:12px">
+          <li><i>·</i><span>Todo pacote com CRM gera um item no grupo CRM, canais “CRM E-mail” e “CRM WhatsApp”.</span></li>
+          <li><i>·</i><span>Antecipação: 4 subitens sem Período. Lançamento e Conversão: 6 subitens, D0 a D7.</span></li>
+          <li><i>·</i><span>Peça presente: “A revisar”. Peça ausente: subitem criado em “Ajuste solicitado” com o aviso “FALTANDO NA ORIGEM”.</span></li>
+          <li><i>·</i><span>Subitem existente nunca é alterado. Se o 2b regenerar a copy, a planilha recebe a nova e o Monday pode ficar com a antiga.</span></li>
+          <li><i>·</i><span>Responsável: o configurado para CRM, com um substituto se o Monday recusar. O responsável nunca trava a entrega (desde 20/10).</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Data do D0</h3>
+        <ol class="steps" style="margin-top:12px">
+          <li><b>Dia de referência</b>: hoje até 15h59 (Brasília); a partir das 16h, amanhã. Sábado ou domingo viram segunda.</li>
+          <li><b>D0 = dia de referência + 1.</b> Cai de terça a sábado: sexta antes das 16h dá sábado; sexta a partir das 16h dá terça.</li>
+          <li><b>Intervalo de 10 dias</b> (desde 20/10): a Conversão começa 10 dias depois do D0 do Lançamento do mesmo concurso. Se o D7 passaria do fim das inscrições, o intervalo encolhe, mas nunca antes do D0 normal.</li>
+          <li><b>Feriados não são considerados.</b></li>
+          <li>D0 já gravado e vencido bloqueia (“reagendar manualmente”). Fim das inscrições ausente ou antes do D7 também.</li>
+        </ol>
+      </div>
+    </div>
+
+    <h3>Planilha CRM · só Lançamento e Conversão</h3>
+    <p class="hint">São 34 colunas em ordem fixa. Se o cabeçalho divergir em qualquer letra, nada é escrito; o 2e nunca cria coluna.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Coluna</th><th>O que recebe</th></tr></thead>
+      <tbody>
+        <tr><td>Ordem</td><td>Sempre vazia</td></tr>
+        <tr><td>nome_do_concurso</td><td>“ÓRGÃO - UF (Tipo)”; o tipo evita colisão entre Lançamento e Conversão</td></tr>
+        <tr><td>e-mail: bloco_a, CTA_a, bloco_b, CTA_b</td><td>Texto exato do pacote CRM estruturado</td></tr>
+        <tr><td>e-mail: link_CTA_a / link_CTA_b</td><td>Blog ou página de vendas da Assinatura, com UTMs; o B leva sufixo _B</td></tr>
+        <tr><td>email_d0_link_blog_bloco_a</td><td>Só no D0: LINK_BLOG com UTM e sufixo _BLOG; vazia sem blog</td></tr>
+        <tr><td>*_imagemheader_link</td><td>Sempre vazia (não há arte de header)</td></tr>
+        <tr><td>WhatsApp: bloco_a</td><td>Corpo da mensagem</td></tr>
+        <tr><td>WhatsApp: wpp_*_link</td><td>Só a sequência de UTMs; a URL base está fixa no template</td></tr>
+        <tr><td>agendamento_disparo</td><td>Data do D0 (AAAA-MM-DD)</td></tr>
+        <tr><td>segmentacao</td><td>Cargos do edital; sem cargos, a carreira; só escrita se a coluna existir</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="acc">
+      <details><summary>Padrão das UTMs<svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary><div class="in">
+        <ul class="list">
+          <li><i>·</i><span><code>utm_source=salesforce</code> · <code>utm_medium=email</code> ou <code>whatsapp</code></span></li>
+          <li><i>·</i><span><code>utm_campaign=JB_AUT_CRM_GCO_PREP_AVUL_OMNI_CON_LEAD_CAUDA_LONGA</code></span></li>
+          <li><i>·</i><span><code>utm_content=JB_AUT_&lt;data da peça&gt;_CRM_GCO_PREP_AVUL_&lt;EML|WPP&gt;_&lt;01-03&gt;_CON_LEAD_CAUDA_LONGA_&lt;TOKEN&gt;</code></span></li>
+          <li><i>·</i><span>O número conta por canal: e-mail 01-02-03 = D0/D3/D7; WhatsApp 01-02-03 = D0/D1/D5.</span></li>
+          <li><i>·</i><span>TOKEN = sigla + UF; sem sigla de uma palavra, cidade + UF; senão órgão + UF. Maiúsculas, sem acento. Concurso federal sem UF sai sem UF (desde 30/09).</span></li>
+        </ul>
+      </div></details>
+      <details><summary>O que trava a entrega<svg width="16" height="16" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></summary><div class="in">
+        <ul class="list">
+          <li><i>·</i><span><b>Pacote CRM estruturado incompleto</b>: falta alguma das 6 peças ou campo obrigatório (e-mail: assunto, blocos, CTAs e destinos; WhatsApp: corpo e destino).</span></li>
+          <li><i>·</i><span><b>Destino inválido</b>: só “blog” ou “vendas”; WhatsApp só vendas, exceto o D0; e-mail com destino blog sem LINK_BLOG válido.</span></li>
+          <li><i>·</i><span><b>Texto fora do contrato</b> (desde 15/09): qualquer variável; no WhatsApp também URL, emoji no fim, rótulo de botão, seta solta.</span></li>
+          <li><i>·</i><span><b>Copy do Monday diferente</b> da copy da planilha.</span></li>
+        </ul>
+        <p class="hint" style="margin-top:12px">Se o único problema é o pacote estruturado, o item volta uma única vez ao 2b. Erros de texto não voltam. Na 3ª tentativa bloqueada, a etapa vira <b>Erro</b> e alguém precisa corrigir e devolver para “Artes prontas”.</p>
+      </div></details>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="historico" data-t="Histórico">
+  <div class="ch-head"><div class="ch-num">05</div><div>
+    <h2>Histórico de <span class="r">mudanças</span></h2>
+    <p class="say">Decisões que mudaram o comportamento do CRM, da mais recente para a mais antiga (2026).</p>
+  </div></div>
+  <div class="ch-body">
+    <div class="tw"><table>
+      <thead><tr><th>Data</th><th>Mudança</th><th>Agente</th></tr></thead>
+      <tbody>
+        <tr><td>24/10</td><td>Vagas na copy = imediatas + cadastro de reserva; linha de total ainda em modo sombra (não injeta)</td><td>2b · #214</td></tr>
+        <tr><td>22/10</td><td>Coluna segmentacao (cargos do edital) na planilha</td><td>2b + 2e · #241</td></tr>
+        <tr><td>20/10</td><td>Conversão começa 10 dias depois do Lançamento do mesmo concurso</td><td>2e · #239</td></tr>
+        <tr><td>20/10</td><td>Responsável desativado no Monday não trava mais o CRM</td><td>2e · #236</td></tr>
+        <tr><td>07/10</td><td>Tamanho do cadastro de reserva entra na copy se bater com o edital</td><td>2a</td></tr>
+        <tr><td>01/10</td><td>Concurso “Só CR” passa a gerar campanha (sem mídia paga)</td><td>2a</td></tr>
+        <tr><td>30/09</td><td>Concurso federal sem UF: nome e TOKEN sem UF</td><td>2e · #213</td></tr>
+        <tr><td>28/09</td><td>Mídia paga por porte; PP continua sem CRM</td><td>2a · #203</td></tr>
+        <tr><td>28/09</td><td>Lançamento pulado pelo Radar é criado antes da Conversão</td><td>2a</td></tr>
+        <tr><td>22/09</td><td>Skill de copy v2.4.3 em produção; claims liberadas vão a 15</td><td>2b · #171</td></tr>
+        <tr><td>15/09</td><td>Contrato de texto da régua compartilhado entre 2b e 2e; rodapé DIVERGÊNCIAS deixa de vazar para o D7</td><td>2b + 2e</td></tr>
+        <tr><td>12/09</td><td>Instruções específicas da régua</td><td>2b</td></tr>
+        <tr><td>11/09</td><td>Decisões do time de CRM: sem merge tag, sem URL e sem rótulo de botão no WhatsApp; teto de 600 caracteres; marcadores e setas não contam como emoji</td><td>2b</td></tr>
+        <tr><td>11/09</td><td>Lançamento e Conversão exigem edital ou post do blog</td><td>2a</td></tr>
+        <tr><td>10/09</td><td>D0 com corte das 16h e fim de semana; tipo no nome_do_concurso</td><td>2e</td></tr>
+        <tr><td>09/09</td><td>Menos de 50 vagas: perde só mídia paga, CRM continua; Curso no Gran</td><td>2a + 2b</td></tr>
+        <tr><td>18/08</td><td>Fim das inscrições obrigatório em todos os tipos</td><td>2a</td></tr>
+        <tr><td>12/08</td><td>Matriz do Enxoval validada com Mídia</td><td>2a</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="ch" id="pedir" data-t="Como pedir">
+  <div class="ch-head"><div class="ch-num">06</div><div>
+    <h2>Como pedir um <span class="r">refinamento</span></h2>
+    <p class="say">Cada regra mora em um de quatro lugares, e isso muda o que um pedido garante. Diga a peça (ex.: D5 WhatsApp), um exemplo real e se a regra deve reprovar ou só orientar.</p>
+  </div></div>
+  <div class="ch-body">
+    <div class="tw"><table>
+      <thead><tr><th>Tipo de pedido</th><th>Onde muda</th><th>Efeito</th></tr></thead>
+      <tbody>
+        <tr><td>Tom, ângulo, estrutura, exemplos</td><td>Skill <code>crm.md</code> / <code>_crm_regua.md</code></td><td>O modelo passa a tentar; ninguém mede</td></tr>
+        <tr><td>Limite que deve reprovar</td><td><code>agente2b/validators.py</code> / <code>comum/crm_contrato.py</code></td><td>Reprova e reescreve; vira teste automático</td></tr>
+        <tr><td>Quais peças, por tipo e porte</td><td><code>agente2a/pacote.py</code></td><td>Muda o pacote das campanhas novas</td></tr>
+        <tr><td>Datas, colunas, UTMs, responsável</td><td><code>agente2e/</code></td><td>Muda a entrega na planilha e no Monday</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+</main>
+
+<section class="closing" id="aberto" data-t="Em aberto">
+  <div class="closing-in">
+    <div class="kick">Pontos em aberto</div>
+    <h2 style="margin-top:12px">Onde a skill e o código <span style="color:var(--red)">não batem</span></h2>
+    <p class="say">Onze decisões que o time de CRM pode tomar para a próxima rodada de refinamento.</p>
+    <ul class="open">
+      <li><span class="n">01</span><span><b>Assunto não chega à planilha</b><span class="d">O 2b gera e exige o assunto, mas a planilha não tem coluna de assunto. Hoje ele só aparece no Monday.</span></span></li>
+      <li><span class="n">02</span><span><b>Tetos só de orientação</b><span class="d">Assunto até 55 e CTA até 20 caracteres não são checados. Devem reprovar?</span></span></li>
+      <li><span class="n">03</span><span><b>Faixas de tamanho divergentes</b><span class="d">A skill mira 350–560 caracteres no WhatsApp e 110–180 palavras no e-mail; o código aceita 120–600 e exige só 300 caracteres no e-mail, sem teto.</span></span></li>
+      <li><span class="n">04</span><span><b>Limite de “!” no WhatsApp</b><span class="d">Uma parte da skill diz até 3, outra até 2.</span></span></li>
+      <li><span class="n">05</span><span><b>Valor arredondado e data sem ano</b><span class="d">A skill diz que “R$ 7 mil” e “23/08” reprovam; o código aceita quando a fonte confirma.</span></span></li>
+      <li><span class="n">06</span><span><b>Claims liberadas desatualizadas</b><span class="d">Os prompts listam 4 claims (08/09); a lista oficial tem 15 (22/09). A skill ainda cita itens fora da lista (“Vitalícia”, “Gran Questões”).</span></span></li>
+      <li><span class="n">07</span><span><b>Templates com %%Nome%% e “[URGENTE]”</b><span class="d">Ainda aparecem em exemplos da skill, embora o código os remova ou reprove.</span></span></li>
+      <li><span class="n">08</span><span><b>WhatsApp de grupos sem %%Nome%%</b><span class="d">Está só na orientação; o código não bloqueia.</span></span></li>
+      <li><span class="n">09</span><span><b>Recursos do produto sem trava</b><span class="d">Aulas e questões na copy de CRM só passam pelo Revisor, sem checagem automática.</span></span></li>
+      <li><span class="n">10</span><span><b>Feriados</b><span class="d">Não são considerados no cálculo do D0.</span></span></li>
+      <li><span class="n">11</span><span><b>Copy regenerada</b><span class="d">Atualiza a planilha, mas não os subitens já criados no Monday.</span></span></li>
+    </ul>
+  </div>
+</section>
+
+<footer>Diário de bordo das entregas de CRM · esteira Cauda Longa · Gran Cursos Online. Regras lidas do código em produção em 27/10/2026; a página é atualizada quando as regras mudam. <a href="../" style="color:var(--red-ink)">Relatório do Radar</a></footer>
+
+<script>
+(function(){
+  var secs=[].slice.call(document.querySelectorAll('[data-t]')), toc=document.getElementById('toc'), bar=document.getElementById('bar');
+  secs.forEach(function(s,i){var a=document.createElement('a');a.href='#'+s.id;a.innerHTML='<span>'+String(i).padStart(2,'0')+'</span>'+s.dataset.t;toc.appendChild(a);});
+  var links=[].slice.call(toc.querySelectorAll('a'));
+  function on(){
+    var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?h.scrollTop/max*100:0)+'%';
+    var cur=0; secs.forEach(function(s,i){if(s.getBoundingClientRect().top<120)cur=i;});
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur);});
+  }
+  addEventListener('scroll',on,{passive:true}); on();
+})();
+</script>
+</body>
+</html>
